@@ -1,0 +1,32 @@
+int partition(int *arr, int l, int h)
+{
+    int t = 0;
+    for (int i = l+1; i <= h; i++)
+        if (arr[i] <= arr[l])
+            t++;
+    int pivotIndex = t + l;
+    swap(arr[l], arr[pivotIndex]);
+
+    int pivot = arr[pivotIndex];
+    int i = l, j = h;
+    while (i < pivotIndex && j > pivotIndex)
+    {
+        if (arr[i] <= pivot)
+            i++;
+        else if (arr[j] > pivot)
+            j--;
+        else
+            swap(arr[i++], arr[j--]);
+    }
+    return pivotIndex;
+}
+void quickSort(int *arr, int l, int h)
+{
+    if (l < h)
+    {
+        int pivotIndex = partition(arr, l, h);
+        int mid = l + ((h - l) / 2);
+        quickSort(arr, l, pivotIndex-1);
+        quickSort(arr, pivotIndex + 1, h);
+    }
+}
