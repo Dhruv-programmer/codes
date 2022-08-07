@@ -1,0 +1,22 @@
+void solve(vector<int> &a, int i, vector<vector<int>> &res)
+    {
+        int n = a.size();
+        if (i == n)
+            res.push_back(a);
+        else
+        {
+            for (int j = i; j < n; j++)
+            {
+                swap(a[i], a[j]);
+                solve(a, i + 1, res);
+                swap(a[i], a[j]);
+            }
+        }
+    }
+
+    vector<vector<int>> permute(vector<int> &nums)
+    {
+        vector<vector<int>> res;
+        solve(nums, 0, res);
+        return res;
+    }
