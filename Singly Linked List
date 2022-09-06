@@ -1,0 +1,108 @@
+class node
+{
+public:
+    int data;
+    node *next;
+};
+void pushFront(node **head, int data)
+{
+    node *a = new node;
+    a->next = *head;
+    a->data = data;
+    *head = a;
+}
+void addAfter(node *prev_node, int data)
+{
+    if (prev_node == NULL)
+        return;
+    node *a = new node;
+    a->next = prev_node->next;
+    a->data = data;
+    prev_node->next = a;
+}
+void insertAtend(node **head, int data)
+{
+    node *b = new node;
+    b->next = NULL;
+    b->data = data;
+    if (*head == NULL)
+    {
+        *head = b;
+        return;
+    }
+    node *a = *head;
+    while (a->next != NULL)
+        a = a->next;
+    a->next = b;
+}
+void deleteFront(node *&head)
+{
+    if (head == NULL)
+        return;
+    node *a = head;
+    head = head->next;
+    a->next = NULL;
+    delete a;
+}
+void deleteN(node *&head, int pos)
+{
+    if (head == NULL)
+        return;
+    node *prev = NULL, *current = head;
+    if (pos == 0)
+        deleteFront(head);
+    else
+    {
+        while (pos--)
+        {
+            prev = current;
+            current = current->next;
+        }
+        prev->next = current->next;
+        current->next = NULL;
+        delete current;
+    }
+}
+void deleteKey(node *&head, int key)
+{
+    int pos = 0;
+    node *t = head;
+    while (t != NULL)
+    {
+        if (t->data == key)
+        {
+            deleteN(head, pos);
+            break;
+        }
+        else
+        {
+            t = t->next;
+            pos++;
+        }
+    }
+}
+void print(node **head)
+{
+    if (*head == NULL)
+        return;
+    node *a = *head;
+    while (a != NULL)
+    {
+        cout << a->data << " ";
+        a = a->next;
+    }
+    cout << endl;
+}
+int main()
+{
+    node *head = NULL;
+    pushFront(&head, 4);
+    node *a = head;
+    pushFront(&head, 3);
+    addAfter(a, 45);
+    insertAtend(&head, 5);
+    print(&head);
+    deleteKey(head,45);
+    print(&head);
+    return 0;
+}
