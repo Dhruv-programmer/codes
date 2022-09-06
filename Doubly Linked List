@@ -7,6 +7,11 @@ public:
     int data;
     node *prev;
     node *next;
+    node()
+    {
+        next = NULL;
+        prev = NULL;
+    }
     node(int data)
     {
         this->data = data;
@@ -14,75 +19,124 @@ public:
         next = NULL;
     }
 };
-void insertAtHead(node *&head, int data)
+void insertAtFront(node *&head, int data)
 {
-    node *n = new node(data);
-    n->next = head;
+    node *a = new node(data);
+    a->next = head;
     if (head != NULL)
-        head->prev = n;
-    head = n;
+        head->prev = a;
+    head = a;
 }
 void insertAtEnd(node *&head, int data)
 {
-    node *n = new node(data);
+    node *a = new node(data);
     if (head == NULL)
-        head = n;
-    else
     {
-        node *last = head;
-        while (last->next != NULL)
-            last = last->next;
-        node *n = new node(data);
-        last->next = n;
-        n->prev = last;
-    }
-}
-void insertAtpos(node *&head, int pos, int data)
-{
-    if (pos == 0)
-    {
-        insertAtHead(head, data);
+        head = a;
         return;
     }
-    // inserting between current and previous
-    node* temp = head;
-    while (pos>1)
-    {
-        temp = temp->next;
-        pos--;
-    }
-    if (temp->next == NULL)
-        insertAtEnd(head, data);
+    node *t = head;
+    while (t->next != NULL)
+        t = t->next;
+    a->prev = t;
+    t->next = a;
+}
+void insertAtPos(node *&head, int pos, int data)
+{
+    pos--;
+    if (pos == 0)
+        insertAtFront(head, data);
     else
     {
-        node *n = new node(data);
-        temp->next->prev = n;
-        n->next = temp->next;
-        temp->next = n;
-        n->prev = temp;
+        node *t = head;
+        while (pos > 1)
+        {
+            if (t == NULL)
+            {
+                cout << "Invalid\n";
+                return;
+            }
+            t = t->next;
+            pos--;
+        }
+        if (t->next == NULL)
+            insertAtEnd(head, data);
+        else
+        {
+            node *a = new node(data);
+            a->prev = t;
+            a->next = t->next;
+            t->next->prev = a;
+            t->next = a;
+        }
+    }
+}
+void deleteKey(node *&head, int key)
+{
+    node *current = head;
+    // if first element
+    if (head == NULL)
+        return;
+    if (current->data == key)
+    {
+        head = current->next;
+        current->next = NULL;
+        if (head != NULL)
+            head->prev = NULL;
+        delete current;
+    }
+    else
+    {
+        while (current->data != key)
+        {
+            if (current->next == NULL)
+                return;
+            current = current->next;
+        }
+        // last element
+        if (current->next == NULL)
+        {
+            current->prev->next = NULL;
+            current->prev = NULL;
+            delete current;
+        }
+        // mid element
+        else
+        {
+            current->prev->next = current->next;
+            current->next->prev = current->prev;
+            current->next = NULL;
+            current->prev = NULL;
+            delete current;
+        }
     }
 }
 void print(node *&head)
 {
-    node *a = head;
-    while (a != NULL)
+    if (head == NULL)
+        return;
+    node *t = head;
+    while (t != NULL)
     {
-        cout << a->data << " ";
-        a = a->next;
+        cout << t->data << " ";
+        t = t->next;
     }
     cout << endl;
 }
 int main()
 {
     node *head = NULL;
+    insertAtFront(head, 4);
     print(head);
-    insertAtHead(head, 4);
+    insertAtEnd(head, 5);
     print(head);
-    insertAtEnd(head, 56);
+    insertAtPos(head, 3, 43);
+    insertAtPos(head, 3, 23);
+    insertAtPos(head, 3, 13);
     print(head);
-    insertAtpos(head, 0, 2);
+    deleteKey(head, 13);
+    deleteKey(head, 43);
     print(head);
-    insertAtpos(head, 3, 99);
-    print(head);
+
     return 0;
 }
