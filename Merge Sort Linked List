@@ -1,58 +1,73 @@
-class Solution
+void insertAfter(ListNode *tail, ListNode *i)
 {
-    void insertAndIncrement(ListNode *&tail, ListNode *&i)
+    i->next = tail->next;
+    tail->next = i;
+}
+ListNode *merge(ListNode *h1, ListNode *h2)
+{
+    if (!h1)
+        return h2;
+    if (!h2)
+        return h1;
+    if (h1->val > h2->val)
+        swap(h1, h2);
+    if (h1->next == NULL)
     {
-        ListNode *t = i;
-        i = i->next;
-        t->next = tail->next;
-        tail->next = t;
-        tail = t;
+        h1->next = h2;
+        return h1;
     }
-    ListNode *merge(ListNode *h1, ListNode *h2)
+    ListNode *cur = h1, *next = h1->next, *i = h2;
+    while (next && i)
     {
-        ListNode *dummy_head = new ListNode(INT_MAX);
-        ListNode *dummy_tail = dummy_head;
-        ListNode *i = h1, *j = h2;
-        while (i && j)
+        if (i->val <= next->val && i->val >= cur->val)
         {
-            if (i->val <= j->val)
-                insertAndIncrement(dummy_tail, i);
-            else
-                insertAndIncrement(dummy_tail, j);
+            ListNode *n2 = i->next;
+            insertAfter(cur, i);
+            i = n2;
+            cur = cur->next;
         }
-        while (i)
-            insertAndIncrement(dummy_tail, i);
-        while (j)
-            insertAndIncrement(dummy_tail, j);
-        ListNode* res = dummy_head->next;
-        delete dummy_head;
-        return res;
-    }
-    ListNode *mergeSort(ListNode *head, ListNode *tail)
-    {
-        if (head == tail)
-            return head;
-        ListNode *slow = head, *fast = head->next;
-        while (fast != tail && fast != tail->next)
+        else
         {
-            slow = slow->next;
-            fast = fast->next->next;
+            cur = cur->next;
+            next = next->next;
         }
-        ListNode *mid = slow, *second = mid->next;
-        mid->next = NULL;
-        ListNode *h1 = mergeSort(head, mid);
-        ListNode *h2 = mergeSort(second, tail);
-        return merge(h1, h2);
     }
+    while (i)
+    {
+        ListNode *n2 = i->next;
+        insertAfter(cur, i);
+        i = n2;
+        cur = cur->next;
+    }
+    return h1;
+}
+ListNode *giveMid(ListNode *head)
+{
+    if (head == NULL || head->next == NULL)
+        return head;
+    ListNode *slow = head, *fast = head->next;
+    while (fast && fast->next)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow;
+}
+ListNode *mergeSort(ListNode *head)
+{
+    // base case (stop dividing if only one node left)
+    if (head == NULL || head->next == NULL)
+        return head;
 
-public:
-    ListNode *sortList(ListNode *head)
-    {
-        if (head == NULL || head->next == NULL)
-            return head;
-        ListNode *tail = head;
-        while (tail->next)
-            tail = tail->next;
-        return mergeSort(head, tail);
-    }
-};
+    // divide the linked list into two parts
+    ListNode *mid = giveMid(head);
+    ListNode *firstPart = head, *secondPart = mid->next;
+    mid->next = NULL;
+
+    // sort these two parts
+    ListNode *h1 = mergeSort(firstPart);
+    ListNode *h2 = mergeSort(secondPart);
+
+    // now merge these two sorted parts
+    return merge(h1, h2);
+}
