@@ -1,0 +1,58 @@
+class Solution
+{
+    void insertAndIncrement(ListNode *&tail, ListNode *&i)
+    {
+        ListNode *t = i;
+        i = i->next;
+        t->next = tail->next;
+        tail->next = t;
+        tail = t;
+    }
+    ListNode *merge(ListNode *h1, ListNode *h2)
+    {
+        ListNode *dummy_head = new ListNode(INT_MAX);
+        ListNode *dummy_tail = dummy_head;
+        ListNode *i = h1, *j = h2;
+        while (i && j)
+        {
+            if (i->val <= j->val)
+                insertAndIncrement(dummy_tail, i);
+            else
+                insertAndIncrement(dummy_tail, j);
+        }
+        while (i)
+            insertAndIncrement(dummy_tail, i);
+        while (j)
+            insertAndIncrement(dummy_tail, j);
+        ListNode* res = dummy_head->next;
+        delete dummy_head;
+        return res;
+    }
+    ListNode *mergeSort(ListNode *head, ListNode *tail)
+    {
+        if (head == tail)
+            return head;
+        ListNode *slow = head, *fast = head->next;
+        while (fast != tail && fast != tail->next)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        ListNode *mid = slow, *second = mid->next;
+        mid->next = NULL;
+        ListNode *h1 = mergeSort(head, mid);
+        ListNode *h2 = mergeSort(second, tail);
+        return merge(h1, h2);
+    }
+
+public:
+    ListNode *sortList(ListNode *head)
+    {
+        if (head == NULL || head->next == NULL)
+            return head;
+        ListNode *tail = head;
+        while (tail->next)
+            tail = tail->next;
+        return mergeSort(head, tail);
+    }
+};
